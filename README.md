@@ -8,7 +8,10 @@
 
 # install on termux
 ```sh
-pkg update && pkg upgrade -y && pkg install git -y
+apt update && apt upgrade -y
+apt install git -y
+```
+```sh
 git clone https://github.com/tdisanayaka/bughostfinder.git && cd bughostfinder && chmod +x installertermux.sh && ./installertermux.sh
 ```
 
