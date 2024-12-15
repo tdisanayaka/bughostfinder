@@ -1,6 +1,11 @@
-#bughostfinder for internet freedom
+# bughostfinder for internet freedom
 
-#usage
+# usage
 ```sh
     bughfinder
 ```
+
+
+# install on termux
+```sh
+git clone https://github.com/tdisanayaka/bughostfinder.git && cd bughostfinder && chmod +x installertermux.sh && ./installertermux.sh
