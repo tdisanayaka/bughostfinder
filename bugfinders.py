@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import socket
 import ipaddress
 from concurrent.futures import ThreadPoolExecutor, as_completed
