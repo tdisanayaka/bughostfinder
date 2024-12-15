@@ -13,9 +13,15 @@ git clone https://github.com/tdisanayaka/bughostfinder.git && cd bughostfinder &
 
 # install on archlinux
 ```sh
+sudo su
+```
+```sh
 git clone https://github.com/tdisanayaka/bughostfinder.git && cd bughostfinder && chmod +x installerarch.sh && ./installerarch.sh
 ```
 # install on debian/ubuntu
+```sh
+sudo apt update && sudo apt upgrade -y && sudo spt install python python-pip
+```
 
 ```sh
 git clone install.sh && cd bughostfinder && chmod +x install.sh && ./install.sh
