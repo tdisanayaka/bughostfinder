@@ -28,7 +28,7 @@ def scan_http(host, timeout=3):
 # Function to scan SSL
 def scan_ssl(host, timeout=3):
     try:
-        response = requests.get(f"https://{host}", timeout=timeout)
+        response = requests.get(f"http://{host}", timeout=timeout)
         return {
             "host": host,
             "ip": socket.gethostbyname(host),
@@ -84,22 +84,25 @@ def scanner(targets, protocol, threads, timeout=3):
     with Progress(
         TextColumn("[progress.description]{task.description}"),
         BarColumn(),
-        "[progress.percentage]{task.percentage:>3.1f}%",
+        "[progress.percentage]{task.percentage:>7.6f}%",
         console=console,
     ) as progress:
         task = progress.add_task("Scanning hosts...", total=len(targets))
 
         with ThreadPoolExecutor(max_workers=threads) as executor:
-            future_to_host = {executor.submit(scanner_function, host, timeout): host for host in targets}
+            batch_size = 10000  # Process hosts in chunks for large CIDR ranges
+            for i in range(0, len(targets), batch_size):
+                batch = targets[i:i + batch_size]
+                future_to_host = {executor.submit(scanner_function, host, timeout): host for host in batch}
 
-            for future in as_completed(future_to_host):
-                progress.update(task, advance=1)
-                result = future.result()
-                if result:  # Add only if scan was successful
-                    working_hosts.append(result)
-                    console.print(
-                        f"[bold green]Found: {result['host']} ({result['ip']}) | Port: {result['port']} | Status: {result['status_code']}[/bold green]"
-                    )
+                for future in as_completed(future_to_host):
+                    progress.update(task, advance=1)
+                    result = future.result()
+                    if result:  # Add only if scan was successful
+                        working_hosts.append(result)
+                        console.print(
+                            f"[bold green]Found: {result['host']} ({result['ip']}) | Port: {result['port']} | Status: {result['status_code']}[/bold green]"
+                        )
 
     return working_hosts
 
@@ -126,7 +129,8 @@ def main():
     elif choice == "2":
         cidr = console.input("[bold yellow]Enter the CIDR range (e.g., 192.168.1.0/24): [/bold yellow]")
         try:
-            targets = [str(ip) for ip in ipaddress.IPv4Network(cidr, strict=False)]
+            # Process CIDR range incrementally for memory efficiency
+            targets = [str(ip) for ip in ipaddress.IPv4Network(cidr, strict=False).hosts()]
         except ValueError:
             console.print("[bold red]Invalid CIDR range! Exiting.[/bold red]")
             return
