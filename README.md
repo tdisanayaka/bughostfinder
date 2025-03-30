@@ -1,4 +1,4 @@
-# bughostfinder for internet freedom
+# bughostfinder for ..........
 
 # usage
 ```sh
